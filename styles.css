@@ -123,19 +123,27 @@ a{color:var(--forest)}
 .legend i{display:inline-block;width:12px;height:12px;border-radius:2px;vertical-align:-2px;margin-right:6px}
 
 /* ---------- terrain map ---------- */
-.map{border:1px solid var(--line);border-radius:var(--r);padding:26px 24px 22px;position:relative;overflow:hidden;background:rgba(255,255,255,.25);margin-bottom:18px}
-.map svg.contours{position:absolute;inset:0;width:100%;height:100%;opacity:.6;pointer-events:none}
-.chain{position:relative;display:grid;grid-template-columns:repeat(5,1fr);gap:14px;z-index:1}
-.chain::before{content:'';position:absolute;left:8%;right:8%;top:50%;border-top:2px dashed var(--line-strong);z-index:0}
+.map{border:1px solid var(--line);border-radius:var(--r);padding:22px 22px 18px;position:relative;overflow:hidden;background:rgba(255,255,255,.25);margin-bottom:18px;display:flex;flex-direction:column;gap:20px}
+.band{position:relative}
+.band+.band{padding-top:18px;border-top:1px solid var(--line)}
+.bandhead{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin:0 0 12px}
+.bandhead .n{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
+.bandhead .d{font-size:13px;color:var(--ink-3)}
+.stations{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:14px}
 .station{position:relative;z-index:1;background:var(--paper);border:1px solid var(--line-strong);border-radius:var(--r);padding:14px 12px 12px;cursor:pointer;text-align:left;min-height:96px;display:flex;flex-direction:column;gap:6px}
 .station:hover{background:#fff}
 .station.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:#fff}
+.station .ico-wrap{color:var(--forest);line-height:0}
+.station.on .ico-wrap{color:var(--marker)}
 .station .n{font-weight:700;line-height:1.2}
 .station .c{font-size:13px;color:var(--ink-3)}
-.station .hot{position:absolute;top:-9px;right:-9px;background:var(--marker);color:#fff;border-radius:999px;font-size:12px;font-weight:700;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;padding:0 6px}
-.support{position:relative;z-index:1;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
-.support .station{min-height:70px}
+.station .hot{position:absolute;top:-9px;right:-9px;background:var(--marker);color:#fff;border-radius:999px;font-size:12px;font-weight:700;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;padding:0 6px;z-index:2}
 .maplabel{font-size:13px;color:var(--ink-3);margin:0 0 10px;position:relative;z-index:1}
+.fnhead{display:flex;align-items:center;gap:10px}
+.fnhead .ico{color:var(--forest);flex:none}
+.fam h4 .ico{color:var(--forest);vertical-align:-.15em}
+.pick .fn .ico{vertical-align:-.15em;color:var(--forest)}
+.badge .ico{vertical-align:-.15em}
 .brief{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:24px}
 .signals{list-style:none;margin:10px 0 0;padding:0}
 .signals li{padding:8px 0;border-top:1px solid var(--line);display:flex;gap:10px;align-items:flex-start}
@@ -313,4 +321,108 @@ textarea.in{min-height:84px;resize:vertical}
   .main{padding:0;max-width:none}
   body{background:#fff}
   .sheet{border-color:#000;page-break-inside:avoid}
+}
+
+/* ================= ENHANCED: transitions and tactile feedback ================= */
+@media (prefers-reduced-motion: no-preference){
+  .btn, .chip, .station, .pick, .proc, .mode, .check, .suggest, .toolcard, .seg button, .linkbtn, .aipill,
+  input, textarea, select, .tag, .badge {
+    transition: color .15s, background .15s, border-color .15s, box-shadow .15s, opacity .2s, transform .2s;
+  }
+  button, [role="button"] { transition: all .2s cubic-bezier(.34,.1,.64,.1); }
+  .chip { transition: all .25s cubic-bezier(.34,.1,.64,.1); }
+  .panel, .card { animation: slideUp .35s cubic-bezier(.34,.1,.64,.1); }
+  .station, .pick, .proc { animation: fadeInScale .3s cubic-bezier(.34,.1,.64,.1); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes fadeInScale { from { opacity: 0; transform: scale(.95); } to { opacity: 1; transform: scale(1); } }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .6; } }
+}
+
+/* icons */
+.ico { width: 1em; height: 1em; display: inline-block; vertical-align: -.125em; flex-shrink: 0; }
+.ico.sm { width: .875em; height: .875em; }
+.ico.lg { width: 1.25em; height: 1.25em; }
+button .ico { margin-right: 6px; }
+
+/* tactile button states */
+button:active, button:active:hover { transform: scale(.98); }
+.btn:active { transform: scale(.97); box-shadow: inset 0 2px 4px rgba(0,0,0,.1); }
+.chip:active { transform: scale(.97); }
+
+/* nudge / hint system */
+.nudge { display: inline-flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: var(--r); background: var(--water-tint); border-left: 3px solid var(--water); margin: 10px 0; font-size: 14px; color: var(--water-ink); }
+.nudge .ico { color: var(--water); margin-top: 2px; flex-shrink: 0; }
+.nudge b { display: block; margin-bottom: 2px; }
+.nudge.hint-next { background: var(--amber-tint); border-left-color: var(--amber); color: #7A5210; }
+.nudge.hint-next .ico { color: var(--amber); }
+.nudge.hint-error { background: var(--marker-tint); border-left-color: var(--marker); color: var(--bad); }
+.nudge.hint-error .ico { color: var(--marker); }
+
+/* smooth reveal for capability cards and detail panels */
+.capcard, .dig, .expert { animation: revealDown .35s ease-out; }
+@keyframes revealDown { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+
+/* hover lift for interactive cards */
+.station:hover, .pick:hover, .proc:hover, .mode:hover { 
+  transform: translateY(-2px); 
+  box-shadow: 0 8px 16px rgba(0,0,0,.12);
+}
+
+/* enhanced chip selection feedback */
+.chip { position: relative; overflow: hidden; }
+.chip::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255,255,255,.4) 0%, transparent 70%); opacity: 0; transition: opacity .4s; pointer-events: none; }
+.chip:active::before { opacity: 1; }
+
+/* focus states for accessibility */
+button:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible { outline: 2px solid var(--water); outline-offset: 2px; }
+
+/* rating segment animation */
+.seg button { position: relative; }
+.seg button.on::after { content: ''; position: absolute; inset: 0; background: var(--forest); opacity: 0; animation: pulse 1.5s infinite; pointer-events: none; z-index: -1; }
+
+/* step progress animation */
+.steptrail span { animation: fadeInLeft .4s ease-out; }
+.steptrail span:nth-child(1) { animation-delay: 0ms; }
+.steptrail span:nth-child(n+2) { animation-delay: calc((var(--i, 1) - 1) * 80ms); }
+@keyframes fadeInLeft { from { opacity: 0; transform: translateX(-8px); } to { opacity: 1; transform: none; } }
+
+/* loading and thinking states */
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading { display: inline-block; animation: spin 1.5s linear infinite; }
+.thinking { position: relative; }
+.thinking::after { content: ''; position: absolute; width: 100%; height: 2px; bottom: -6px; left: 0; background: linear-gradient(90deg, var(--water) 0%, transparent 100%); animation: shimmer 2s infinite; }
+@keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+
+/* tool suggestion cards */
+.toolcard { border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; margin: 8px 0; background: rgba(255,255,255,.4); cursor: pointer; display: flex; gap: 12px; align-items: flex-start; }
+.toolcard:hover { background: #fff; border-color: var(--forest); box-shadow: 0 4px 12px rgba(47,93,80,.15); }
+.toolcard .icon { flex: none; color: var(--forest); margin-top: 2px; }
+.toolcard .text b { display: block; font-weight: 700; margin-bottom: 2px; }
+.toolcard .text { flex: 1; }
+.toolcard .fit { font-size: 12px; color: var(--ink-3); margin-top: 4px; }
+
+/* terrain map icons: icon sits in flow inside .ico-wrap (see .station rules above) */
+.station .ico-wrap .ico { width: 1.4em; height: 1.4em; }
+
+/* AI connection pill (fixed, outside #app so renders never wipe it) */
+.aipill { position: fixed; top: 16px; right: 16px; z-index: 15; display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(255,255,255,.85); border: 1px solid var(--line-strong); border-radius: 999px;
+  padding: 6px 13px; font-size: 13px; font-weight: 700; color: var(--ink-2); cursor: pointer;
+  box-shadow: 0 2px 8px rgba(24,35,34,.08); backdrop-filter: blur(4px); }
+.aipill:hover { background: #fff; border-color: var(--ink-2); }
+.aipill .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ink-3); flex: none; box-shadow: 0 0 0 2px rgba(0,0,0,.04); }
+.aipill .dot.on { background: var(--forest); box-shadow: 0 0 0 3px var(--forest-tint); }
+@media print { .aipill { display: none !important; } }
+
+/* AI-authored nudge (distinct from the static hand-written hint) */
+.nudge.hint-ai { background: var(--forest-tint); border-left-color: var(--forest); color: var(--forest-2); }
+.nudge.hint-ai .ico { color: var(--forest); }
+
+/* mobile/responsive enhancements */
+@media (max-width: 900px){
+  button { padding: 10px 14px; font-size: 15px; }
+  .btn { padding: 10px 14px; }
+  .chip { padding: 7px 10px; font-size: 14px; }
+  .nudge { font-size: 13px; padding: 8px 10px; }
+  .aipill { top: auto; bottom: 14px; right: 14px; }
 }
